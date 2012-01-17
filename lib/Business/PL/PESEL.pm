@@ -20,7 +20,7 @@
 
 package Business::PL::PESEL;
 
-our $VERSION = '0.01'
+our $VERSION = '0.02'
 
 use strict;
 use warnings;
@@ -167,4 +167,5 @@ This is free software; you can redistribute it and/or modify it under
 the terms of MIT license.
 
 =cut
+
 
