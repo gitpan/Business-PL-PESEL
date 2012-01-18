@@ -20,7 +20,7 @@
 
 package Business::PL::PESEL;
 
-our $VERSION = '0.05'
+our $VERSION = '0.06';
 
 use strict;
 use warnings;
@@ -112,7 +112,7 @@ of the Population ID
 
 =head1 VERSION
 
-version 0.05
+version 0.06
 
 =head1 SYNOPSIS
 
