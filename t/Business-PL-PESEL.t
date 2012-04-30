@@ -18,18 +18,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl Business-PL-PESEL.t'
+use Test::More tests => 5;
+use Business::PL::PESEL;
 
-#########################
+my($pesel, $pesel2);
 
-# change 'tests => 1' to 'tests => last_test_to_print';
+ok($pesel = Business::PL::PESEL->new(-pesel => '49040501580'), 'Object creation');
 
-use Test::More tests => 1;
-BEGIN { use_ok('Business::PL::PESEL') };
+ok($pesel->is_valid, 'Check for validity of 49040501580');
 
-#########################
+ok($pesel->is_female, 'Check whether 49040501580 is female');
 
-# Insert your test code below, the Test::More module is use()ed here so read
-# its man page ( perldoc Test::More ) for help writing this test script.
+ok($pesel2 = Business::PL::PESEL->new(-pesel => '00000000000'), 'Object creation');
 
+ok(!$pesel2->is_valid, 'Check for validity of 00000000000');

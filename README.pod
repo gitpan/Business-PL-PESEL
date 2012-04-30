@@ -1,0 +1,65 @@
+=pod
+
+=head1 NAME
+
+Business::PL::PESEL - Validate Polish Universal Electronic System for Registration
+of the Population ID
+
+=head1 VERSION
+
+version 0.07
+
+=head1 SYNOPSIS
+
+use Business::ID::PESEL;
+my $pesel = Business::PL::PESEL->new(-pesel => 49040501580);
+print $pesel->birth_date->month;
+
+=head1 DESCRIPTION
+
+This module can be used to validate and analyze PESEL number.
+
+
+=head1 METHODS
+
+=head2 new(-pesel=>$pesel_number)
+
+Create a new C<Business::PL::PESEL> object.
+
+=head2 is_valid()
+
+Check whether supplied PESEL number is valid. Returns 1 on success and 0 on
+failure.
+
+=head2 is_male()
+
+Check if supplied PESEL numbers belongs to male person. Returns 1 if true, 0
+if false.
+
+=head2 is_female()
+
+Check if supplied PESEL numbers belongs to female person. Returns 1 if true, 0
+if false.
+
+=head2 birth_date()
+
+Returns birth date (Time::Piece object) of person identified by supplied PESEL
+ID.
+
+=head1 BUGS
+
+None known.
+
+=head1 AUTHOR
+
+Tomasz Konojacki <xenu@poczta.onet.pl>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2012 by Tomasz Konojacki.
+
+This is free software; you can redistribute it and/or modify it under
+the terms of MIT license.
+
+=cut
+

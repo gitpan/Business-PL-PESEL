@@ -20,12 +20,13 @@
 
 package Business::PL::PESEL;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use strict;
 use warnings;
 use utf8;
 
+use Number::Range;
 use Time::Piece;
 
 sub new {
@@ -39,14 +40,38 @@ sub new {
 
 sub is_valid {
     my $self = shift;
-    my $checksum;
+    my($checksum, $month, $range);
     warn 'PESEL number not specified' unless defined $self->{-pesel};
     return 0 unless defined $self->{-pesel};
+    
+    # Calculate checksum
     return 0 unless $self->{-pesel} =~ /^(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)$/;
     $checksum = (1 * $1) + (3 * $2) + (7 * $3) + (9 * $4) + (1 * $5) + (3 * $6) + (7 * $7) + (9 * $8) + (1 * $9) + (3 * $10);
     $checksum %= 10;
     $checksum = 10 - $checksum unless $checksum == 0;
     return 0 unless ($11 == $checksum);
+
+    # Check whether month is valid
+    $month = $3 . $4;
+
+    if ($month - 80 > 0) {
+        $month -= 80;
+    }
+    elsif ($month - 60 > 0) {
+        $month -= 60;
+    }
+    elsif ($month - 40 > 0) {
+        $month -= 40;
+    }
+    elsif ($month - 20 > 0) {
+        $month -= 20;
+    }
+    
+    $range = Number::Range->new('1..12');
+    
+    return 0 if !$range->inrange(-+-$month);
+
+    # No errors, this is valid PESEL
     return 1;
 }
 
@@ -112,7 +137,7 @@ of the Population ID
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 SYNOPSIS
 

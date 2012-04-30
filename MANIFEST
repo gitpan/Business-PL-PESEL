@@ -1,6 +1,8 @@
 Changes
-Makefile.PL
-MANIFEST
-README
-t/Business-PL-PESEL.t
 lib/Business/PL/PESEL.pm
+LICENSE
+Makefile.PL
+MANIFEST			This list of files
+README.pod
+t/Business-PL-PESEL.t
+META.yml                                 Module meta-data (added by MakeMaker)
