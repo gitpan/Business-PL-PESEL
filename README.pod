@@ -7,18 +7,18 @@ of the Population ID
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 
-use Business::ID::PESEL;
-my $pesel = Business::PL::PESEL->new(-pesel => 49040501580);
-print $pesel->birth_date->month;
+    use Business::ID::PESEL;
+    my $pesel = Business::PL::PESEL->new(-pesel => 49040501580);
+    print $pesel->birth_date->month;
 
 =head1 DESCRIPTION
 
-This module can be used to validate and analyze PESEL number.
-
+This module can be used to validate and analyze PESEL number. All methods
+(except ->is_valid) die on failure.
 
 =head1 METHODS
 
@@ -50,9 +50,14 @@ ID.
 
 None known.
 
+=head1 GIT REPOSITORY
+
+    git://git.savannah.nongnu.org/perl-pesel.git
+    Mirror: git://github.com/xenu/business-pl-pesel.git
+
 =head1 AUTHOR
 
-Tomasz Konojacki <xenu@poczta.onet.pl>
+  Tomasz Konojacki <xenu@poczta.onet.pl>
 
 =head1 COPYRIGHT AND LICENSE
 
@@ -62,4 +67,3 @@ This is free software; you can redistribute it and/or modify it under
 the terms of MIT license.
 
 =cut
-

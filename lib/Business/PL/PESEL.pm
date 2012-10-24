@@ -20,30 +20,34 @@
 
 package Business::PL::PESEL;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use strict;
 use warnings;
 use utf8;
 
-use Number::Range;
 use Time::Piece;
 
 sub new {
     my($class, %args) = @_;
-    warn 'PESEL number not specified in constructor' unless defined $args{-pesel};
+
+    die 'PESEL number not specified in constructor' unless defined $args{-pesel};
+
     my $self = {
         %args
     };
-    return bless $self, $class;   
+
+    return bless $self, $class;
 }
 
 sub is_valid {
     my $self = shift;
+    my %args = @_;
+
     my($checksum, $month, $range);
-    warn 'PESEL number not specified' unless defined $self->{-pesel};
+
     return 0 unless defined $self->{-pesel};
-    
+
     # Calculate checksum
     return 0 unless $self->{-pesel} =~ /^(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)$/;
     $checksum = (1 * $1) + (3 * $2) + (7 * $3) + (9 * $4) + (1 * $5) + (3 * $6) + (7 * $7) + (9 * $8) + (1 * $9) + (3 * $10);
@@ -51,25 +55,12 @@ sub is_valid {
     $checksum = 10 - $checksum unless $checksum == 0;
     return 0 unless ($11 == $checksum);
 
-    # Check whether month is valid
-    $month = $3 . $4;
-
-    if ($month - 80 > 0) {
-        $month -= 80;
+    unless ($args{-dont_check_date}) {
+        # Check whether date is valid
+        eval {
+            $self->birth_date
+        } or return 0;
     }
-    elsif ($month - 60 > 0) {
-        $month -= 60;
-    }
-    elsif ($month - 40 > 0) {
-        $month -= 40;
-    }
-    elsif ($month - 20 > 0) {
-        $month -= 20;
-    }
-    
-    $range = Number::Range->new('1..12');
-    
-    return 0 if !$range->inrange(-+-$month);
 
     # No errors, this is valid PESEL
     return 1;
@@ -77,9 +68,11 @@ sub is_valid {
 
 sub is_male {
     my $self = shift;
-    warn 'PESEL number not specified' unless defined $self->{-pesel};
+
+    die 'PESEL number not specified' unless defined $self->{-pesel};
+
     return 0 unless defined $self->{-pesel};
-    return 0 unless $self->is_valid || warn 'Invalid PESEL';
+    return 0 unless $self->is_valid || die 'Invalid PESEL';
     return 0 unless $self->{-pesel} =~ /^\d{9}(\d)\d$/;
     return 0 if $1 % 2 == 0;
     return 1;
@@ -87,9 +80,11 @@ sub is_male {
 
 sub is_female {
     my $self = shift;
-    warn 'PESEL number not specified' unless defined $self->{-pesel};
+
+    die 'PESEL number not specified' unless defined $self->{-pesel};
+
     return 0 unless defined $self->{-pesel};
-    return 0 unless $self->is_valid || warn 'Invalid PESEL';
+    return 0 unless $self->is_valid || die 'Invalid PESEL';
     return 0 unless $self->{-pesel} =~ /^\d{9}(\d)\d$/;
     return 1 if $1 % 2 == 0;
     return 0;
@@ -97,11 +92,13 @@ sub is_female {
 
 sub birth_date {
     my $self = shift;
-    my($year, $month, $day, $tp);
-    warn 'PESEL number not specified' unless defined $self->{-pesel};
-    return 0 unless defined $self->{-pesel};
-    return 0 unless $self->is_valid || warn 'Invalid PESEL';
-    return 0 unless ($year, $month, $day) = $self->{-pesel} =~ /^(\d{2})(\d{2})(\d{2})\d{5}$/;
+
+    my($year, $month, $day, $tp, $date);
+
+    die 'PESEL number not specified' unless defined $self->{-pesel};
+    die 'Invalid PESEL' unless $self->is_valid(-dont_check_date => 1) ;
+    die 'Invalid PESEL' unless ($year, $month, $day) = $self->{-pesel} =~ /^(\d{2})(\d{2})(\d{2})\d{5}$/;
+
     if ($month - 80 > 0) {
         $month -= 80;
         $year = 18 . $year;
@@ -121,7 +118,16 @@ sub birth_date {
     else {
         $year = 19 . $year;
     }
-    return Time::Piece->strptime("$day-$month-$year", '%d-%m-%Y');
+
+    $date = "$day-$month-$year";
+
+    eval {
+        $tp = Time::Piece->strptime($date, '%d-%m-%Y');
+    } or die 'Invalid PESEL: invalid date!';
+
+    die 'Invalid PESEL: invalid date!' if ($date ne $tp->strftime('%d-%m-%Y'));
+
+    return $tp;
 }
 
 1;
@@ -132,12 +138,12 @@ __END__
 
 =head1 NAME
 
-Business::PL::PESEL - Validate Polish Universal Electronic System for Registration 
+Business::PL::PESEL - Validate Polish Universal Electronic System for Registration
 of the Population ID
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 
@@ -147,8 +153,8 @@ version 0.07
 
 =head1 DESCRIPTION
 
-This module can be used to validate and analyze PESEL number.
-
+This module can be used to validate and analyze PESEL number. All methods
+(except ->is_valid) die on failure.
 
 =head1 METHODS
 
@@ -174,11 +180,16 @@ if false.
 =head2 birth_date()
 
 Returns birth date (Time::Piece object) of person identified by supplied PESEL
-ID. 
+ID.
 
 =head1 BUGS
 
 None known.
+
+=head1 GIT REPOSITORY
+
+    git://git.savannah.nongnu.org/perl-pesel.git
+    Mirror: git://github.com/xenu/business-pl-pesel.git
 
 =head1 AUTHOR
 
@@ -192,5 +203,4 @@ This is free software; you can redistribute it and/or modify it under
 the terms of MIT license.
 
 =cut
-
 

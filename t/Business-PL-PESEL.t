@@ -18,17 +18,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-use Test::More tests => 5;
+use Test::More tests => 13;
 use Business::PL::PESEL;
 
-my($pesel, $pesel2);
+my($pesel, $tp);
 
 ok($pesel = Business::PL::PESEL->new(-pesel => '49040501580'), 'Object creation');
-
 ok($pesel->is_valid, 'Check for validity of 49040501580');
-
 ok($pesel->is_female, 'Check whether 49040501580 is female');
+ok(!$pesel->is_male, 'Check whether 49040501580 is male');
+ok($tp = $pesel->birth_date, 'Get birth date of 49040501580');
+ok(($tp->strftime('%d-%m-%Y') eq '05-04-1949'), 'Check birth date of 49040501580');
 
-ok($pesel2 = Business::PL::PESEL->new(-pesel => '00000000000'), 'Object creation');
 
-ok(!$pesel2->is_valid, 'Check for validity of 00000000000');
+ok($pesel = Business::PL::PESEL->new(-pesel => '00000000000'), 'Object creation');
+ok(!$pesel->is_valid, 'Check for validity of 00000000000');
+ok(!(eval {$pesel->is_female}), 'Check whether 00000000000 is female');
+ok(!(eval {$pesel->is_male}), 'Check whether 00000000000 is male');
+ok(!(eval {$pesel->is_birth_date}), 'Get birth date of 00000000000');
+
+# This PESEL is technically valid, but contains invalid date
+ok($pesel = Business::PL::PESEL->new(-pesel => '94023059606'), 'Object creation');
+ok(!$pesel->is_valid, 'Check for validity of 94023059606');
