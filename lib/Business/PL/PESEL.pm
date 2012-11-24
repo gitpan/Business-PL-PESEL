@@ -20,7 +20,7 @@
 
 package Business::PL::PESEL;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use strict;
 use warnings;
@@ -70,10 +70,9 @@ sub is_male {
     my $self = shift;
 
     die 'PESEL number not specified' unless defined $self->{-pesel};
+    die 'Invalid PESEL' unless $self->is_valid;
+    die 'Invalid PESEL' unless $self->{-pesel} =~ /^\d{9}(\d)\d$/;
 
-    return 0 unless defined $self->{-pesel};
-    return 0 unless $self->is_valid || die 'Invalid PESEL';
-    return 0 unless $self->{-pesel} =~ /^\d{9}(\d)\d$/;
     return 0 if $1 % 2 == 0;
     return 1;
 }
@@ -82,10 +81,9 @@ sub is_female {
     my $self = shift;
 
     die 'PESEL number not specified' unless defined $self->{-pesel};
+    die 'Invalid PESEL' unless $self->is_valid;
+    die 'Invalid PESEL' unless $self->{-pesel} =~ /^\d{9}(\d)\d$/;
 
-    return 0 unless defined $self->{-pesel};
-    return 0 unless $self->is_valid || die 'Invalid PESEL';
-    return 0 unless $self->{-pesel} =~ /^\d{9}(\d)\d$/;
     return 1 if $1 % 2 == 0;
     return 0;
 }
@@ -143,7 +141,7 @@ of the Population ID
 
 =head1 VERSION
 
-version 0.08
+version 0.09
 
 =head1 SYNOPSIS
 
@@ -193,7 +191,7 @@ None known.
 
 =head1 AUTHOR
 
-  Tomasz Konojacki <xenu@poczta.onet.pl>
+  Tomasz Konojacki <me@xenu.tk>
 
 =head1 COPYRIGHT AND LICENSE
 

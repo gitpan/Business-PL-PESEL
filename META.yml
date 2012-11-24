@@ -1,9 +1,9 @@
 --- #YAML:1.0
 name:               Business-PL-PESEL
-version:            0.08
+version:            0.09
 abstract:           Validate Polish Universal Electronic System for Registration
 author:
-    - Tomasz Konojacki <xenu@poczta.onet.pl>
+    - Tomasz Konojacki <me@xenu.tk>
 license:            unknown
 distribution_type:  module
 configure_requires:
